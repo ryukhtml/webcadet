@@ -1,0 +1,2325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Portage web de Full Tilt! Pinball – Space Cadet, Dragon's Keep et Skulduggery.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23e5e5e5%22><circle cx=%2212%22 cy=%2212%22 r=%229%22/></svg>">
+    <title>Full Tilt! Pinball</title>
+    <style>
+        /* Local DotMatrix font used for the mobile HUD score/mission readout */
+        @font-face {
+            font-family: 'DotMatrix';
+            src: url('dot-matrix.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* Default dark theme tokens */
+        :root {
+            --theme-color: #d4d4d8;
+            --theme-glow: transparent;
+            --bg-panel: rgba(20, 20, 20, 0.96);
+            --bg-input: #121212;
+            --bg-hover: #262626;
+            --border-ui: #2e2e2e;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --btn-active-text: #09090b;
+        }
+
+        /* Classic Win95 bevels & palette */
+        [data-theme="retro"] {
+            --theme-color: #000080;
+            --theme-glow: transparent;
+            --bg-panel: #c0c0c0;
+            --bg-input: #ffffff;
+            --bg-hover: #000080;
+            --border-ui: #808080;
+            --text-main: #000000;
+            --text-muted: #333333;
+            --btn-active-text: #ffffff;
+        }
+
+        [data-theme="retro"] body {
+            background: #000000 !important;
+            border: none;
+            box-shadow: none;
+        }
+
+        [data-theme="retro"] .glass-panel,
+        [data-theme="retro"] .icon-btn,
+        [data-theme="retro"] .tab-btn {
+            background: #c0c0c0 !important;
+            color: #000000 !important;
+            backdrop-filter: none !important;
+            border-radius: 0 !important;
+            border: 2px solid !important;
+            border-top-color: #ffffff !important;
+            border-left-color: #ffffff !important;
+            border-bottom-color: #000000 !important;
+            border-right-color: #000000 !important;
+            box-shadow: inset -1px -1px #808080, inset 1px 1px #dfdfdf !important;
+        }
+
+        [data-theme="retro"] .tab-btn.active {
+            background: #000080 !important;
+            color: #ffffff !important;
+        }
+
+        [data-theme="retro"] .icon-btn:active,
+        [data-theme="retro"] .tab-btn:active {
+            border-top-color: #000000 !important;
+            border-left-color: #000000 !important;
+            border-bottom-color: #ffffff !important;
+            border-right-color: #ffffff !important;
+            box-shadow: inset 1px 1px #808080 !important;
+        }
+
+        [data-theme="retro"] .menu-item {
+            color: #000000 !important;
+            border-radius: 0 !important;
+        }
+        [data-theme="retro"] .menu-item:hover {
+            background: #000080 !important;
+            color: #ffffff !important;
+        }
+
+        [data-theme="retro"] #side-panel h3 {
+            background: #000080;
+            color: white;
+            padding: 4px 6px;
+            font-size: 0.9rem;
+            margin: -20px -20px 15px -20px;
+            border-bottom: none;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        [data-theme="retro"] input[type="text"],
+        [data-theme="retro"] input[type="password"] {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border-radius: 0 !important;
+            border: 2px solid !important;
+            border-top-color: #808080 !important;
+            border-left-color: #808080 !important;
+            border-bottom-color: #ffffff !important;
+            border-right-color: #ffffff !important;
+        }
+
+        [data-theme="retro"] .stat-card {
+            background: #dfdfdf !important;
+            border: 1px solid #808080 !important;
+            border-radius: 0 !important;
+        }
+
+        /* Windows XP Luna theme */
+        [data-theme="xp"] {
+            --theme-color: #0054e3;
+            --theme-glow: transparent;
+            --bg-panel: #ece9d8;
+            --bg-input: #ffffff;
+            --bg-hover: #316ac5;
+            --border-ui: #7f9db9;
+            --text-main: #000000;
+            --text-muted: #4a4a4a;
+            --btn-active-text: #ffffff;
+        }
+
+        [data-theme="xp"] body {
+            background: #000000 !important;
+            border: none;
+            box-shadow: none;
+            font-family: 'Tahoma', 'Segoe UI', sans-serif;
+        }
+
+        [data-theme="xp"] .glass-panel {
+            background: #ece9d8 !important;
+            color: #000000 !important;
+            backdrop-filter: none !important;
+            border-radius: 6px 6px 0 0 !important;
+            border: 3px solid #0054e3 !important;
+            box-shadow: 2px 4px 12px rgba(0,0,0,0.7) !important;
+        }
+
+        [data-theme="xp"] .icon-btn,
+        [data-theme="xp"] .tab-btn {
+            background: linear-gradient(180deg, #ffffff 0%, #ece9d8 85%, #d6d2c2 100%) !important;
+            color: #000000 !important;
+            border: 1px solid #003c74 !important;
+            border-radius: 3px !important;
+            box-shadow: inset 0 1px 0 #ffffff !important;
+        }
+
+        [data-theme="xp"] .icon-btn:hover,
+        [data-theme="xp"] .tab-btn:hover {
+            box-shadow: inset 0 0 2px #f8b330, inset 0 1px 0 #fff !important;
+            border-color: #003c74 !important;
+        }
+
+        [data-theme="xp"] .tab-btn.active {
+            background: linear-gradient(180deg, #316ac5 0%, #0054e3 100%) !important;
+            color: #ffffff !important;
+            border-color: #002d6d !important;
+            box-shadow: none !important;
+        }
+
+        [data-theme="xp"] .menu-item {
+            color: #000000 !important;
+            border-radius: 2px !important;
+        }
+        [data-theme="xp"] .menu-item:hover {
+            background: #316ac5 !important;
+            color: #ffffff !important;
+        }
+
+        [data-theme="xp"] #side-panel h3 {
+            background: linear-gradient(180deg, #0997ff 0%, #0053ee 8%, #0050ee 40%, #06f 88%, #06f 93%, #005bff 95%, #003dd7 96%, #003dd7 100%);
+            color: white;
+            padding: 6px 10px;
+            font-size: 0.9rem;
+            margin: -20px -20px 15px -20px;
+            border-bottom: 1px solid #002d6d;
+            text-shadow: 1px 1px 1px #001c48;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        [data-theme="xp"] input[type="text"],
+        [data-theme="xp"] input[type="password"] {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border-radius: 0 !important;
+            border: 1px solid #7f9db9 !important;
+        }
+
+        [data-theme="xp"] .stat-card {
+            background: #ffffff !important;
+            border: 1px solid #7f9db9 !important;
+        }
+
+        #game-window-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        /* Window chrome is hidden on the default dark theme, enabled on Win95/XP */
+        #win95-title-bar { display: none; }
+
+        [data-theme="retro"] #game-window-wrapper {
+            background: #c0c0c0;
+            padding: 3px;
+            border: 2px solid;
+            border-top-color: #dfdfdf;
+            border-left-color: #dfdfdf;
+            border-bottom-color: #000000;
+            border-right-color: #000000;
+            box-shadow: inset -1px -1px #808080, inset 1px 1px #ffffff, 4px 4px 10px rgba(0,0,0,0.8);
+        }
+
+        [data-theme="retro"] #win95-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #000080;
+            color: white;
+            padding: 2px 3px 2px 5px;
+            font-family: 'Tahoma', sans-serif;
+            font-weight: bold;
+            font-size: 0.8rem;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 3px;
+        }
+
+        [data-theme="retro"] .win95-title-btns { display: flex; gap: 2px; }
+
+        [data-theme="retro"] .win95-title-btns .title-btn {
+            width: 16px; height: 14px; background: #c0c0c0; color: black;
+            border: 1px solid; border-top-color: #ffffff; border-left-color: #ffffff;
+            border-bottom-color: #000000; border-right-color: #000000;
+            box-shadow: inset -1px -1px #808080, inset 1px 1px #dfdfdf;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 10px; font-weight: bold; cursor: pointer; padding: 0; line-height: 1;
+        }
+
+        [data-theme="retro"] canvas {
+            border-radius: 0 !important; box-shadow: none !important;
+            border: 2px solid; border-top-color: #808080; border-left-color: #808080;
+            border-bottom-color: #ffffff; border-right-color: #ffffff; height: 90dvh !important;
+        }
+
+        [data-theme="xp"] #game-window-wrapper {
+            background: #ece9d8;
+            padding: 0 3px 3px 3px;
+            border: 3px solid #0054e3;
+            border-top: none;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.85);
+            overflow: hidden;
+        }
+
+        [data-theme="xp"] #win95-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, #0997ff 0%, #0053ee 8%, #0050ee 40%, #06f 88%, #06f 93%, #005bff 95%, #003dd7 96%, #003dd7 100%);
+            color: white;
+            padding: 4px 6px 4px 8px;
+            font-family: 'Tahoma', sans-serif;
+            font-weight: bold;
+            font-size: 0.82rem;
+            text-shadow: 1px 1px 1px #001c48;
+            width: calc(100% + 6px);
+            margin-left: -3px;
+            margin-right: -3px;
+            margin-bottom: 2px;
+            box-sizing: border-box;
+        }
+
+        [data-theme="xp"] .win95-title-btns { display: flex; gap: 2px; }
+
+        [data-theme="xp"] .win95-title-btns .title-btn {
+            width: 18px; height: 18px;
+            background: linear-gradient(180deg, #3c8cff 0%, #0054e3 100%);
+            color: white;
+            border: 1px solid #ffffff;
+            border-radius: 3px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 10px; font-weight: bold; cursor: pointer; padding: 0; line-height: 1;
+        }
+
+        [data-theme="xp"] .win95-title-btns .title-btn:last-child {
+            background: linear-gradient(180deg, #e96f56 0%, #c7321b 100%);
+        }
+
+        [data-theme="xp"] canvas {
+            border-radius: 0 !important; box-shadow: none !important;
+            border: 1px solid #7f9db9;
+            height: 90dvh !important;
+        }
+
+        /* Scanline + RGB subpixel overlay for CRT mode */
+        #crt-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none; z-index: 999; display: none;
+        }
+
+        body { 
+            background: #000; display: flex; justify-content: center; align-items: center; 
+            height: 100dvh; margin: 0; overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text-main);
+            border: none; box-sizing: border-box;
+            touch-action: none; overscroll-behavior: none;
+        }
+
+        .icon-btn { width: 42px; height: 42px; background-color: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border-ui); border-radius: 6px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background 0.15s ease, border-color 0.15s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+        .icon-btn:hover { background-color: var(--bg-hover); border-color: #52525b; }
+        .icon-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        
+        .tab-btn { padding: 6px 12px; cursor: pointer; border: 1px solid var(--border-ui); background: #1a1a1a; border-radius: 4px; font-weight: 500; font-size: 0.85rem; color: var(--text-main); transition: 0.15s; }
+        .tab-btn:hover { background: var(--bg-hover); border-color: #52525b; }
+        .tab-btn.active { background: var(--theme-color); border-color: var(--theme-color); color: var(--btn-active-text); font-weight: 600; }
+
+        .glass-panel { background: var(--bg-panel); border: 1px solid var(--border-ui); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.85); pointer-events: auto; color: var(--text-main); }
+
+        #hud-container {
+            position: absolute; top: 15px; left: 0; right: 0; margin: 0 auto; width: fit-content;
+            display: none; flex-direction: column; align-items: center; gap: 5px; z-index: 50;
+        }
+
+        .hud-box {
+            background: #000; border: 3px solid #7b7b7b;
+            border-top-color: #999; border-left-color: #999;
+            border-bottom-color: #4a4a4a; border-right-color: #4a4a4a;
+            padding: 6px 12px; width: 235px; box-sizing: border-box;
+        }
+
+        .hud-text {
+            font-family: 'DotMatrix', 'Courier New', monospace; font-weight: bold;
+            font-size: 1.15rem; color: #7a7aff; line-height: 1.2; letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        #hamburger-btn { position: absolute; top: 20px; right: 20px; z-index: 120; pointer-events: auto; }
+        #hamburger-menu { position: absolute; top: 72px; right: 20px; width: 220px; display: none; flex-direction: column; gap: 4px; padding: 8px; z-index: 120; pointer-events: auto; }
+        .menu-item { background: transparent; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 0.92rem; transition: 0.15s; width: 100%; box-sizing: border-box; }
+        .menu-item:hover { background: var(--bg-hover); }
+        .menu-item svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Keep side-panel above top-left quick action buttons (z-index: 100) */
+        #side-panel { position: absolute; top: 20px; right: 250px; width: 340px; padding: 20px; display: none; max-height: 82vh; overflow-y: auto; z-index: 105; pointer-events: auto; }
+        #side-panel.wide-panel { width: 410px; }
+        #side-panel h3 { margin-top: 0; border-bottom: 1px solid var(--border-ui); padding-bottom: 10px; font-weight: 600; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-ui);
+            border-radius: 6px;
+            padding: 9px 10px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .stat-card-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .stat-card-value {
+            font-family: monospace;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #a855f7;
+        }
+        [data-theme="retro"] .stat-card-value { color: #000080; }
+        [data-theme="xp"] .stat-card-value { color: #0054e3; }
+
+        .clickable-player {
+            cursor: pointer;
+            transition: color 0.15s ease;
+            user-select: none;
+        }
+        .clickable-player:hover {
+            color: #a855f7;
+            text-decoration: underline;
+        }
+        [data-theme="retro"] .clickable-player:hover,
+        [data-theme="xp"] .clickable-player:hover {
+            color: #ffffff;
+        }
+
+        .search-results { background: var(--bg-input); border: 1px solid var(--border-ui); border-radius: 4px; max-height: 150px; overflow-y: auto; margin-top: 5px; display: none; }
+        .search-item, .list-item { padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; user-select: none; }
+        .search-item:hover, .list-item:hover { background: rgba(255,255,255,0.05); }
+        
+        .avatar-small { width: 32px; height: 32px; border-radius: 50%; background: #27272a; object-fit: cover; pointer-events: none; }
+        .avatar-large { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-ui); margin: 0 auto 10px; display: block; }
+        .action-btn { background: none; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; padding: 2px 6px; color: var(--text-main); }
+        
+        input[type="text"], input[type="password"] { background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-ui); width: 100%; padding: 10px; border-radius: 4px; box-sizing: border-box; }
+        input[type="text"]:focus, input[type="password"]:focus { outline: none; border-color: #71717a; }
+
+        canvas#canvas { 
+            height: 96dvh !important; width: auto !important; max-width: 100vw; 
+            object-fit: contain; border-radius: 4px; box-shadow: 0 0 30px rgba(0,0,0,0.9); outline: none !important;
+        }
+
+        #touch-guides { display: none; }
+
+        #jsdos-loading {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000000; z-index: 60; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.4s ease;
+        }
+
+        .loader-spinner {
+            width: 40px; height: 40px; border: 3px solid rgba(255, 255, 255, 0.15);
+            border-top-color: var(--theme-color); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* js-dos container overrides: strip default emulator UI and crop Win3.1 borders */
+        body.is-jsdos #game-container {
+            height: 94dvh !important; width: calc(94dvh * 1.38) !important; max-width: 96vw !important; max-height: calc(96vw / 1.38) !important;
+            position: relative !important; overflow: hidden !important; border-radius: 4px; box-shadow: 0 0 30px rgba(0,0,0,0.9); background: #000 !important;
+        }
+
+        [data-theme="retro"] body.is-jsdos #game-container,
+        [data-theme="xp"] body.is-jsdos #game-container { border-radius: 0 !important; height: 89dvh !important; width: calc(89dvh * 1.38) !important; }
+
+        body.is-jsdos .jsdos-rso, body.is-jsdos .jsdos-rso div { background: transparent !important; margin: 0 !important; padding: 0 !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; border: none !important; }
+        body.is-jsdos .jsdos-rso div:not(:has(canvas)) { display: none !important; }
+        body.is-jsdos .jsdos-rso canvas {
+            position: absolute !important; width: 110% !important; height: 118% !important; left: -4.5% !important; top: -14% !important;
+            max-width: none !important; max-height: none !important; object-fit: fill !important; transform: none !important;
+            border: none !important; border-radius: 0 !important; box-shadow: none !important; cursor: none !important; pointer-events: none !important;
+        }
+        body.is-jsdos.f4-fullscreen .jsdos-rso canvas { width: 100% !important; height: 100% !important; left: 0 !important; top: 0 !important; }
+
+        #mobile-pc-only {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            background: rgba(0, 0, 0, 0.96); z-index: 80; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 25px; box-sizing: border-box;
+        }
+
+        /* Mobile layout: crop the right-hand side panel of the 4:3 canvas via clip-path
+           and replace it with our custom HTML DotMatrix HUD at the top */
+        @media (max-width: 768px) {
+            :root {
+                --k: 0.03; 
+                --hud-h: calc(max(18px, env(safe-area-inset-top, 0px) + 10px) + 95px + 8px);
+                --btn-h: calc(12.5dvh + 1dvh + env(safe-area-inset-bottom, 0px));
+                --avail-h: calc(100dvh - var(--hud-h) - var(--btn-h));
+                --th: min(var(--avail-h), 123vw);
+            }
+
+            body { overflow: hidden !important; background: #000 !important; border: none !important; box-shadow: none !important; }
+            body.is-jsdos #mobile-pc-only { display: flex !important; }
+            body.is-jsdos #game-window-wrapper, body.is-jsdos #touch-guides, body.is-jsdos #left-action-btns, body.is-jsdos #hud-container { display: none !important; }
+
+            #hud-container { 
+                display: flex !important; top: max(18px, calc(env(safe-area-inset-top) + 10px)) !important; 
+                left: 0 !important; right: 0 !important; margin: 0 auto !important; transform: none !important; width: 240px !important; gap: 6px !important;
+            }
+            #hud-container .hud-box { width: 100% !important; padding: 7px 12px !important; }
+            #hud-container .hud-text { font-size: 1.15rem !important; line-height: 1.2 !important; }
+
+            #left-action-btns { flex-direction: column !important; top: max(18px, calc(env(safe-area-inset-top) + 10px)) !important; left: 12px !important; gap: 8px !important; z-index: 100 !important; }
+            #hamburger-btn { top: max(18px, calc(env(safe-area-inset-top) + 10px)) !important; right: 12px !important; }
+            .icon-btn { width: 40px !important; height: 40px !important; }
+
+            [data-theme="retro"] #game-window-wrapper,
+            [data-theme="xp"] #game-window-wrapper { border: none !important; padding: 0 !important; background: transparent !important; box-shadow: none !important; }
+            [data-theme="retro"] #win95-title-bar,
+            [data-theme="xp"] #win95-title-bar { display: none !important; }
+            [data-theme="retro"] canvas,
+            [data-theme="xp"] canvas { border: none !important; }
+
+            canvas#canvas {
+                position: fixed !important; height: var(--th) !important; width: calc(var(--th) * 4 / 3) !important;
+                max-width: none !important; max-height: none !important;
+                left: calc(50vw - var(--th) * 4 / 3 * 0.307) !important;
+                top: auto !important; bottom: calc(var(--btn-h) - var(--th) * var(--k)) !important;
+                transform: none !important; object-fit: contain !important; clip-path: inset(0 39% 0 0);
+                border-radius: 0 !important; box-shadow: none !important;
+            }
+            
+            #side-panel, #side-panel.wide-panel { left: 5% !important; right: 5% !important; width: 90% !important; top: 85px !important; transform: none !important; box-sizing: border-box; }
+            #hamburger-menu { width: 230px !important; top: 66px !important; right: 12px !important; }
+
+            #touch-guides {
+                display: flex !important; justify-content: space-between; position: fixed !important;
+                bottom: calc(1dvh + env(safe-area-inset-bottom, 0px)) !important; left: 3%; width: 94%; height: 12.5dvh !important; pointer-events: none; z-index: 50;
+            }
+            .touch-zone { 
+                width: 31.5%; height: 100%; border: 1px solid #3f3f46; background: rgba(20, 20, 20, 0.7);
+                border-radius: 6px; display: flex; justify-content: center; align-items: center; color: #a1a1aa; 
+                font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; box-shadow: none; text-shadow: none;
+            }
+            .plunger-zone { height: 100%; }
+
+            [data-theme="retro"] .touch-zone {
+                background: #c0c0c0 !important; color: #000000 !important; border-radius: 0 !important; border: 2px solid !important;
+                border-top-color: #ffffff !important; border-left-color: #ffffff !important; border-bottom-color: #000000 !important; border-right-color: #000000 !important;
+                box-shadow: inset -1px -1px #808080, inset 1px 1px #dfdfdf !important; font-family: 'Tahoma', sans-serif; font-weight: bold;
+            }
+
+            [data-theme="xp"] .touch-zone {
+                background: linear-gradient(180deg, #ffffff 0%, #ece9d8 85%, #d6d2c2 100%) !important;
+                color: #000000 !important; border-radius: 4px !important; border: 1px solid #003c74 !important;
+                box-shadow: inset 0 1px 0 #ffffff !important; font-family: 'Tahoma', sans-serif; font-weight: bold;
+            }
+        }
+    </style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
+
+<script>
+    // Emscripten's SDL2 layer registers global key listeners on window/document and swallows
+    // keystrokes even when typing inside HTML <input> fields. We monkey-patch addEventListener
+    // early so any global key listener ignores events originating from form inputs.
+    (function () {
+        const KEY_EVENTS = ['keydown', 'keyup', 'keypress'];
+        const nativeAdd = EventTarget.prototype.addEventListener;
+        const nativeRemove = EventTarget.prototype.removeEventListener;
+        const wrappers = new WeakMap();
+        const isTyping = (e) => { const t = e.target; return !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable); };
+        const isGlobalTarget = (t) => t === window || t === document || t === document.documentElement || t === document.body || (t && t.tagName === 'CANVAS');
+
+        EventTarget.prototype.addEventListener = function (type, listener, options) {
+            if (KEY_EVENTS.includes(type) && typeof listener === 'function' && isGlobalTarget(this)) {
+                let wrapped = wrappers.get(listener);
+                if (!wrapped) {
+                    wrapped = function (e) { if (isTyping(e)) return; return listener.call(this, e); };
+                    wrappers.set(listener, wrapped);
+                }
+                return nativeAdd.call(this, type, wrapped, options);
+            }
+            return nativeAdd.call(this, type, listener, options);
+        };
+        EventTarget.prototype.removeEventListener = function (type, listener, options) {
+            const wrapped = (typeof listener === 'function') ? wrappers.get(listener) : null;
+            return nativeRemove.call(this, type, wrapped || listener, options);
+        };
+    })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div id="crt-overlay"></div>
+
+<div id="login-modal" class="glass-panel" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); z-index: 1000; display: flex; justify-content: center; align-items: center; border-radius: 0; border: none;">
+    <form onsubmit="event.preventDefault(); loginOrRegister();" style="background: var(--bg-panel); padding: 32px; border-radius: 8px; width: 320px; text-align: center; border: 1px solid var(--border-ui);">
+        <h2 style="margin-top: 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">Full Tilt!</h2>
+        <p id="t-login-sub" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Connexion au serveur</p>
+        
+        <input type="text" id="input-pseudo" name="username" autocomplete="username" maxlength="20" pattern="[a-zA-Z0-9_\-]{3,20}" title="3 à 20 caractères" placeholder="Pseudo" required style="margin-bottom: 12px;">
+        <input type="password" id="input-password" name="password" autocomplete="current-password" minlength="8" maxlength="72" placeholder="Mot de passe" required style="margin-bottom: 20px;">
+        
+        <button type="submit" id="t-btn-play" class="tab-btn active" style="width: 100%; padding: 11px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">JOUER</button>
+        
+        <button type="button" id="t-btn-guest" onclick="guestLogin()" class="tab-btn" style="width: 100%; padding: 10px; border-radius: 4px; font-weight: 500; cursor: pointer; font-size: 0.88rem; margin-top: 10px;">JOUER EN TANT QU'INVITÉ</button>
+        
+        <p id="login-error" role="alert" style="color: #ef4444; font-size: 0.85rem; margin-top: 15px; margin-bottom: 0; display: none;"></p>
+        <p style="margin-top: 16px; margin-bottom: 0; font-size: 0.75rem;"><a id="t-legal-link" href="mentions-legales.html" style="color: var(--text-muted); text-decoration: underline;">Mentions légales & RGPD</a></p>
+    </form>
+</div>
+
+<div id="web-ui" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+    <div id="left-action-btns" style="position: absolute; top: 20px; left: 20px; pointer-events: auto; z-index: 100; display: flex; gap: 10px;">
+        <button class="icon-btn" onclick="triggerReplay()" title="Recommencer (F2)" aria-label="Recommencer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+        </button>
+        <button class="icon-btn" onclick="triggerPause()" title="Pause (F3)" aria-label="Pause">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        </button>
+        <button class="icon-btn" id="mute-btn" onclick="toggleMute()" title="Couper le son" aria-label="Son">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+        </button>
+    </div>
+
+    <div id="hud-container">
+        <div class="hud-box">
+            <div id="ui-mission" class="hud-text">Awaiting Deployment</div>
+        </div>
+        <div class="hud-box">
+            <div id="ui-score" class="hud-text" style="text-align: right;">0</div>
+            <div id="ui-ball" class="hud-text">BILLE 1</div>
+        </div>
+    </div>
+
+    <button class="icon-btn" id="hamburger-btn" onclick="toggleHamburger()" title="Menu" aria-label="Menu" aria-expanded="false" style="pointer-events: auto;">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    
+    <div id="hamburger-menu" class="glass-panel" onmouseleave="closePanel('hamburger')">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px 10px 10px; border-bottom: 1px solid var(--border-ui); margin-bottom: 4px;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="t-lang-label">Langue</span>
+            <div style="display: flex; gap: 4px;">
+                <button onclick="setLang('fr')" class="tab-btn" id="lang-fr-btn" style="padding: 3px 8px; font-size: 0.75rem;">FR</button>
+                <button onclick="setLang('en')" class="tab-btn" id="lang-en-btn" style="padding: 3px 8px; font-size: 0.75rem;">EN</button>
+            </div>
+        </div>
+
+        <button class="menu-item" onclick="toggleMenu('profile')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> <span id="t-menu-profile">Profil</span>
+        </button>
+        <button class="menu-item" onclick="toggleMenu('maps')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg> <span id="t-menu-tables">Tables</span>
+        </button>
+        <button class="menu-item" onclick="toggleMenu('friends')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> <span id="t-menu-friends">Amis</span>
+        </button>
+        <button class="menu-item" onclick="toggleMenu('scores')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path></svg> <span id="t-menu-scores">Classements</span>
+        </button>
+        <button class="menu-item" onclick="toggleMenu('stats')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> 
+            <span id="t-menu-stats">Statistiques</span>
+        </button>
+        <button class="menu-item" onclick="toggleMenu('notifs')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 
+            <span id="t-menu-notifs">Demandes d'amis</span>
+            <span id="menu-notif-badge" style="background: #ef4444; color: white; font-size: 0.7rem; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: none; justify-content: center; align-items: center; margin-left: auto;">0</span>
+        </button>
+        <button class="menu-item" onclick="toggleMenu('settings')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> <span id="t-menu-settings">Réglages</span>
+        </button>
+        <button class="menu-item" onclick="toggleMenu('legal')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> <span id="t-menu-legal">Mentions Légales</span>
+        </button>
+    </div>
+
+    <div id="side-panel" class="glass-panel">
+        <h3 id="panel-title">Titre</h3>
+        <div id="panel-content" style="font-size: 0.92rem;"></div>
+    </div>
+    
+    <div id="touch-guides">
+        <div class="touch-zone" id="t-touch-left">Gauche</div>
+        <div class="touch-zone plunger-zone" id="t-touch-plunger">Lancer</div>
+        <div class="touch-zone" id="t-touch-right">Droit</div>
+    </div>
+</div>
+
+<div id="mobile-pc-only">
+    <div class="hud-box" style="width: 90%; max-width: 320px; padding: 20px; border-color: var(--border-ui);">
+        <div class="hud-text" style="color: var(--text-main); font-size: 1.3rem; margin-bottom: 12px;" id="t-pc-title">PC UNIQUEMENT</div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;" id="t-pc-desc">
+            Les tables <strong>Dragon's Keep</strong> et <strong>Skulduggery</strong> tournent sous émulation Windows 3.1 et nécessitent un écran d'ordinateur.
+        </p>
+        <button class="tab-btn active" onclick="changeMap('cadet')" style="width: 100%; padding: 12px; font-weight: bold;" id="t-pc-btn">
+            JOUER À SPACE CADET
+        </button>
+    </div>
+</div>
+
+<div id="game-window-wrapper">
+    <div id="win95-title-bar">
+        <span>3D Pinball for Windows - Space Cadet</span>
+        <div class="win95-title-btns">
+            <div class="title-btn">_</div>
+            <div class="title-btn">□</div>
+            <div class="title-btn">X</div>
+        </div>
+    </div>
+    
+    <div id="game-container" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+        <canvas id="canvas" tabindex="-1" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
+    
+    <div id="jsdos-loading">
+        <div class="loader-spinner"></div>
+        <div class="hud-box" style="width: auto; max-width: 360px; padding: 15px 20px;">
+            <div class="hud-text" style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 8px;" id="t-load-title">INITIALIZING TABLE...</div>
+            <p style="color: #a1a1aa; font-family: 'Segoe UI', sans-serif; font-size: 0.9rem; margin: 0;">
+                <span id="t-load-text1">Please wait, it's only</span> <span id="loading-timer" style="font-weight: bold; color: #ffffff;">10</span> <span id="t-load-text2">s while the game is loading</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // UI localization dictionary (FR / EN)
+    const dict = {
+        fr: {
+            loginSub: "Connexion au serveur",
+            btnPlay: "JOUER",
+            btnGuest: "JOUER EN TANT QU'INVITÉ",
+            legalLink: "Mentions légales & RGPD",
+            langLabel: "Langue",
+            menuProfile: "Profil",
+            menuTables: "Tables",
+            menuFriends: "Amis",
+            menuScores: "Classements",
+            menuStats: "Statistiques",
+            menuNotifs: "Demandes d'amis",
+            menuSettings: "Réglages",
+            menuLegal: "Mentions Légales",
+            touchLeft: "Gauche",
+            touchPlunger: "Lancer",
+            touchRight: "Droit",
+            pcTitle: "PC UNIQUEMENT",
+            pcDesc: "Les tables <strong>Dragon's Keep</strong> et <strong>Skulduggery</strong> tournent sous émulation Windows 3.1 et nécessitent un écran d'ordinateur.",
+            pcBtn: "JOUER À SPACE CADET",
+            loadTitle: "INITIALISATION DE LA TABLE...",
+            loadText1: "Veuillez patienter,",
+            loadText2: "s pendant le chargement du jeu",
+            profileTitle: "Profil Pilote",
+            avatarBtn: "Changer d'avatar",
+            logoutBtn: "Déconnexion",
+            deleteAccBtn: "Supprimer définitivement mon compte",
+            loading: "Chargement...",
+            uploading: "Envoi en cours...",
+            noNotifs: "Aucune demande d'ami en attente.",
+            tabMondial: "Mondial",
+            tabAmis: "Amis",
+            tabPerso: "Perso",
+            noScores: "Aucun score.",
+            searchPlaceholder: "Rechercher un pseudo...",
+            noFriends: "Aucun ami.",
+            visualTheme: "Thème Visuel",
+            themeDark: "Sombre (Défaut)",
+            themeWin95: "Windows 95",
+            themeWinXP: "Windows XP",
+            crtFilter: "Filtre CRT",
+            flipsL: "Flipper G.",
+            flipsR: "Flipper D.",
+            plungerKey: "Lancer",
+            tiltL: "Secousse G.",
+            tiltR: "Secousse D.",
+            tiltC: "Secousse C.",
+            remapHint: "Cliquez sur un bouton puis appuyez sur la touche. Échap pour annuler.",
+            statTabOverview: "Résumé",
+            statTabScores: "Scores",
+            statTabTime: "Temps",
+            statTabBalls: "Billes",
+            statBest: "Record",
+            statAvgScore: "Score Moyen",
+            statMedianTime: "Temps Médian",
+            statAvgTime: "Temps Moyen",
+            statAvgBall: "Points / Bille",
+            statBestBall: "Record 1 Bille",
+            statPPM: "Points / Min",
+            statGamesCount: "Parties / Total",
+            statBackToMe: "← Mes stats",
+            statClickHint: "Cliquez sur un joueur pour afficher ses statistiques détaillées.",
+            legalPopup: `
+                <div style="font-size: 0.85rem; line-height: 1.5; color: var(--text-main);">
+                    <p><strong>Projet personnel amateur à but non lucratif.</strong></p>
+                    <p>Ce portage s'appuie sur le moteur open-source <em>SpaceCadetPinball</em> de k4zmu2a. Les marques, images, sons et tables (<em>Space Cadet</em>, <em>Dragon's Keep</em>, <em>Skulduggery</em>) restent la propriété exclusive de leurs titulaires (Microsoft, Maxis, Cinematronics). Retrait immédiat sur simple demande des ayants droit.</p>
+                    <p>Aucun cookie publicitaire ni outil de pistage n'est utilisé. Les pseudos et scores sont enregistrés de manière pseudonymisée via Supabase uniquement pour le fonctionnement des classements.</p>
+                    <p><a href="mentions-legales.html" style="color: var(--text-main); text-decoration: underline; font-weight: 600;">Consulter les mentions légales et la politique RGPD complètes</a></p>
+                    <p style="font-style: italic; color: var(--text-muted); margin-top: 15px; border-top: 1px solid var(--border-ui); padding-top: 10px;">
+                        "Sans Antho et Marceau je n'aurais jamais fait ce projet - c'est pour toutes nos soirées passées à jouer à l'internat, merci !"
+                    </p>
+                </div>
+            `
+        },
+        en: {
+            loginSub: "Server Login",
+            btnPlay: "PLAY",
+            btnGuest: "PLAY AS GUEST",
+            legalLink: "Legal Notice & GDPR",
+            langLabel: "Language",
+            menuProfile: "Profile",
+            menuTables: "Tables",
+            menuFriends: "Friends",
+            menuScores: "Leaderboards",
+            menuStats: "Statistics",
+            menuNotifs: "Friend Requests",
+            menuSettings: "Settings",
+            menuLegal: "Legal Notice",
+            touchLeft: "Left",
+            touchPlunger: "Launch",
+            touchRight: "Right",
+            pcTitle: "PC ONLY",
+            pcDesc: "The <strong>Dragon's Keep</strong> and <strong>Skulduggery</strong> tables run under Windows 3.1 emulation and require a computer screen.",
+            pcBtn: "PLAY SPACE CADET",
+            loadTitle: "INITIALIZING TABLE...",
+            loadText1: "Please wait, it's only",
+            loadText2: "s while the game is loading",
+            profileTitle: "Pilot Profile",
+            avatarBtn: "Change Avatar",
+            logoutBtn: "Log out",
+            deleteAccBtn: "Permanently delete my account",
+            loading: "Loading...",
+            uploading: "Uploading...",
+            noNotifs: "No pending friend requests.",
+            tabMondial: "Global",
+            tabAmis: "Friends",
+            tabPerso: "Personal",
+            noScores: "No scores yet.",
+            searchPlaceholder: "Search username...",
+            noFriends: "No friends yet.",
+            visualTheme: "Visual Theme",
+            themeDark: "Dark (Default)",
+            themeWin95: "Windows 95",
+            themeWinXP: "Windows XP",
+            crtFilter: "CRT Filter",
+            flipsL: "Left Flipper",
+            flipsR: "Right Flipper",
+            plungerKey: "Launch",
+            tiltL: "Left Tilt",
+            tiltR: "Right Tilt",
+            tiltC: "Center Tilt",
+            remapHint: "Click a button then press a key. Press Esc to cancel.",
+            statTabOverview: "Overview",
+            statTabScores: "Scores",
+            statTabTime: "Time",
+            statTabBalls: "Balls",
+            statBest: "Best Score",
+            statAvgScore: "Avg Score",
+            statMedianTime: "Median Time",
+            statAvgTime: "Avg Time",
+            statAvgBall: "Pts / Ball",
+            statBestBall: "Best Single Ball",
+            statPPM: "Pts / Min",
+            statGamesCount: "Games / Total",
+            statBackToMe: "← My stats",
+            statClickHint: "Click any player to view their detailed statistics.",
+            legalPopup: `
+                <div style="font-size: 0.85rem; line-height: 1.5; color: var(--text-main);">
+                    <p><strong>Non-commercial personal amateur project.</strong></p>
+                    <p>This port is based on k4zmu2a's open-source <em>SpaceCadetPinball</em> engine. Trademarks, images, sounds, and tables (<em>Space Cadet</em>, <em>Dragon's Keep</em>, <em>Skulduggery</em>) remain the exclusive property of their respective owners (Microsoft, Maxis, Cinematronics). Immediate takedown upon request.</p>
+                    <p>No advertising cookies or tracking tools are used. Usernames and scores are pseudonymized via Supabase solely for leaderboard functionality.</p>
+                    <p><a href="mentions-legales-en.html" style="color: var(--text-main); text-decoration: underline; font-weight: 600;">View full Legal Notice & GDPR policy</a></p>
+                    <p style="font-style: italic; color: var(--text-muted); margin-top: 15px; border-top: 1px solid var(--border-ui); padding-top: 10px;">
+                        "Without Antho and Marceau I would never have made this project - this is for all our nights spent playing at boarding school, thanks!"
+                    </p>
+                </div>
+            `
+        }
+    };
+
+    let currentLang = localStorage.getItem('pinball_lang') || 'fr';
+
+    function setLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('pinball_lang', lang);
+        applyTranslations();
+    }
+
+    function applyTranslations() {
+        const d = dict[currentLang];
+        document.getElementById('t-login-sub').innerText = d.loginSub;
+        document.getElementById('t-btn-play').innerText = d.btnPlay;
+        document.getElementById('t-btn-guest').innerText = d.btnGuest;
+        document.getElementById('t-legal-link').innerText = d.legalLink;
+        document.getElementById('t-lang-label').innerText = d.langLabel;
+        document.getElementById('t-menu-profile').innerText = d.menuProfile;
+        document.getElementById('t-menu-tables').innerText = d.menuTables;
+        document.getElementById('t-menu-friends').innerText = d.menuFriends;
+        document.getElementById('t-menu-scores').innerText = d.menuScores;
+        
+        const statsLabel = document.getElementById('t-menu-stats');
+        if (statsLabel) statsLabel.innerText = d.menuStats;
+        
+        document.getElementById('t-menu-notifs').innerText = d.menuNotifs;
+        document.getElementById('t-menu-settings').innerText = d.menuSettings;
+        document.getElementById('t-menu-legal').innerText = d.menuLegal;
+        document.getElementById('t-touch-left').innerText = d.touchLeft;
+        document.getElementById('t-touch-plunger').innerText = d.touchPlunger;
+        document.getElementById('t-touch-right').innerText = d.touchRight;
+        document.getElementById('t-pc-title').innerText = d.pcTitle;
+        document.getElementById('t-pc-desc').innerHTML = d.pcDesc;
+        document.getElementById('t-pc-btn').innerText = d.pcBtn;
+        document.getElementById('t-load-title').innerText = d.loadTitle;
+        document.getElementById('t-load-text1').innerText = d.loadText1;
+        document.getElementById('t-load-text2').innerText = d.loadText2;
+
+        document.getElementById('lang-fr-btn').classList.toggle('active', currentLang === 'fr');
+        document.getElementById('lang-en-btn').classList.toggle('active', currentLang === 'en');
+
+        document.getElementById('t-legal-link').href = currentLang === 'en' ? 'mentions-legales-en.html' : 'mentions-legales.html';
+    }
+</script>
+
+<script>
+    // Table routing via URL query param (?map=cadet | dragon | pirate)
+    var urlParams = new URLSearchParams(window.location.search);
+    var currentMap = urlParams.get('map') || 'cadet'; 
+
+    function changeMap(mapName) {
+        if (mapName !== currentMap) {
+            window.location.href = window.location.pathname + '?map=' + encodeURIComponent(mapName);
+        }
+    }
+
+    function setTheme(themeName) {
+        document.body.setAttribute('data-theme', themeName);
+        localStorage.setItem('pinball_theme', themeName);
+    }
+
+    function getGameTarget() {
+        return document.getElementById('canvas') || document.querySelector('#game-container canvas') || document.body;
+    }
+
+    // Active playtime tracker: uses performance.now() deltas instead of wall-clock timestamps
+    // so that pausing the game (F3), switching browser tabs, or losing window focus won't inflate average match duration.
+    const activeTimeTracker = {
+        accumulatedMs: 0,
+        lastResumeTime: null,
+        hasStartedScoring: false,
+        isManualPause: false,
+
+        reset() {
+            this.accumulatedMs = 0;
+            this.lastResumeTime = null;
+            this.hasStartedScoring = false;
+            this.isManualPause = false;
+        },
+
+        startOnFirstScore() {
+            if (!this.hasStartedScoring) {
+                this.hasStartedScoring = true;
+                this.isManualPause = false;
+                if (!document.hidden) {
+                    this.lastResumeTime = performance.now();
+                }
+            }
+        },
+
+        toggleManualPause() {
+            if (!this.hasStartedScoring) return;
+            this.isManualPause = !this.isManualPause;
+            if (this.isManualPause) {
+                this.pauseClock();
+            } else if (!document.hidden) {
+                this.resumeClock();
+            }
+        },
+
+        pauseClock() {
+            if (this.lastResumeTime !== null) {
+                this.accumulatedMs += (performance.now() - this.lastResumeTime);
+                this.lastResumeTime = null;
+            }
+        },
+
+        resumeClock() {
+            if (this.hasStartedScoring && !this.isManualPause && !document.hidden && this.lastResumeTime === null) {
+                this.lastResumeTime = performance.now();
+            }
+        },
+
+        getActiveSeconds() {
+            let totalMs = this.accumulatedMs;
+            if (this.lastResumeTime !== null) {
+                totalMs += (performance.now() - this.lastResumeTime);
+            }
+            return Math.max(0, Math.round(totalMs / 1000));
+        }
+    };
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) activeTimeTracker.pauseClock();
+        else activeTimeTracker.resumeClock();
+    });
+
+    window.addEventListener('blur', () => activeTimeTracker.pauseClock());
+    window.addEventListener('focus', () => activeTimeTracker.resumeClock());
+
+    // Sync tracker state when player uses physical F2 (New Game) or F3 (Pause) keys
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'F2' || e.code === 'F2') {
+            resetCurrentGameStats();
+        } else if (e.key === 'F3' || e.code === 'F3') {
+            activeTimeTracker.toggleManualPause();
+        }
+    });
+
+    function triggerReplay() {
+        resetCurrentGameStats();
+        const target = getGameTarget();
+        target.dispatchEvent(new KeyboardEvent('keydown', { key: 'F2', code: 'F2', keyCode: 113, bubbles: true }));
+        target.dispatchEvent(new KeyboardEvent('keyup', { key: 'F2', code: 'F2', keyCode: 113, bubbles: true }));
+        if(target.focus) target.focus();
+    }
+
+    function triggerPause() {
+        activeTimeTracker.toggleManualPause();
+        const target = getGameTarget();
+        target.dispatchEvent(new KeyboardEvent('keydown', { key: 'F3', code: 'F3', keyCode: 114, bubbles: true }));
+        target.dispatchEvent(new KeyboardEvent('keyup', { key: 'F3', code: 'F3', keyCode: 114, bubbles: true }));
+        if(target.focus) target.focus();
+    }
+
+    // Audio mute state management: SDL2 initializes its WebAudio context lazily after user interaction,
+    // so we poll briefly to keep the AudioContext suspended/resumed in sync with localStorage.
+    let isMuted = localStorage.getItem('pinball_mute') === 'true';
+
+    function updateMuteIcon() {
+        const btn = document.getElementById('mute-btn');
+        if (!btn) return;
+        if (isMuted) {
+            btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>';
+        } else {
+            btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
+        }
+    }
+
+    function syncAudioContextState() {
+        const ctx = window.Module && window.Module.SDL2 && window.Module.SDL2.audioContext;
+        if (!ctx) return;
+        if (isMuted && ctx.state === 'running') {
+            ctx.suspend();
+        } else if (!isMuted && ctx.state === 'suspended') {
+            ctx.resume();
+        }
+    }
+
+    setInterval(syncAudioContextState, 300);
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        localStorage.setItem('pinball_mute', isMuted);
+        updateMuteIcon();
+        syncAudioContextState();
+        if(getGameTarget().focus) getGameTarget().focus();
+    }
+
+    // Mobile multi-touch handler: splits the screen into 3 horizontal zones (left flipper, plunger, right flipper)
+    // and synthesizes the corresponding keyboard events for the WASM canvas.
+    const touchActions = new Map();
+    const getZone = x => x < window.innerWidth * 0.35 ? 'left' : x > window.innerWidth * 0.65 ? 'right' : 'plunger';
+
+    window.addEventListener('touchstart', (e) => {
+        if(e.target.closest('#web-ui') || e.target.closest('#login-modal') || e.target.closest('#mobile-pc-only')) return;
+        e.preventDefault(); e.stopImmediatePropagation();
+        
+        const target = getGameTarget();
+        for(let i=0; i<e.changedTouches.length; i++) {
+            const t = e.changedTouches[i];
+            const action = getZone(t.clientX);
+            touchActions.set(t.identifier, action);
+            const d = defaultCodes[action];
+            
+            if (navigator.vibrate) navigator.vibrate(15);
+            target.dispatchEvent(new KeyboardEvent('keydown', { key: d.key, code: d.code, keyCode: d.keyCode, bubbles: true }));
+        }
+    }, {passive: false, capture: true});
+
+    const handleTouchEnd = (e) => {
+        if(e.target.closest('#web-ui') || e.target.closest('#login-modal') || e.target.closest('#mobile-pc-only')) return;
+        e.preventDefault(); e.stopImmediatePropagation();
+        
+        const target = getGameTarget();
+        for(let i=0; i<e.changedTouches.length; i++) {
+            const t = e.changedTouches[i];
+            const action = touchActions.get(t.identifier);
+            if (action) {
+                const d = defaultCodes[action];
+                target.dispatchEvent(new KeyboardEvent('keyup', { key: d.key, code: d.code, keyCode: d.keyCode, bubbles: true }));
+                touchActions.delete(t.identifier);
+            }
+        }
+    };
+    window.addEventListener('touchend', handleTouchEnd, {passive: false, capture: true});
+    window.addEventListener('touchcancel', handleTouchEnd, {passive: false, capture: true});
+
+    // Supabase client initialization (public anon key, protected by RLS policies and RPC functions)
+    const supabaseUrl = 'https://dgxnztyysallfsojjtos.supabase.co';
+    const supabaseKey = 'sb_publishable_rlU2iSmUhLZXrnuQyfqORQ_jS3IDBN6';
+    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    let currentPlayer = "";
+    let currentUserId = null;
+    let myAvatar = "";
+
+    const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        applyTranslations();
+        updateMuteIcon();
+
+        const savedTheme = localStorage.getItem('pinball_theme') || 'default';
+        document.body.setAttribute('data-theme', savedTheme);
+
+        const savedCrt = localStorage.getItem('pinball_crt');
+        if (savedCrt === 'true') {
+            crtEnabled = true;
+            document.getElementById('crt-overlay').style.display = 'block';
+        }
+
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+            currentUserId = session.user.id;
+            await initProfile();
+            document.getElementById('login-modal').style.display = 'none';
+            if(getGameTarget().focus) getGameTarget().focus();
+            loadNotifications();
+        }
+
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT' && currentUserId !== 'guest') {
+                currentUserId = null;
+                currentPlayer = "";
+                myAvatar = "";
+                document.getElementById('login-modal').style.display = 'flex';
+            } else if (event === 'SIGNED_IN' && session) {
+                currentUserId = session.user.id;
+                initProfile();
+            }
+        });
+    });
+
+    function guestLogin() {
+        currentPlayer = currentLang === 'en' ? "Guest" : "Invité";
+        currentUserId = "guest";
+        myAvatar = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+        document.getElementById('login-modal').style.display = 'none';
+        if(getGameTarget().focus) getGameTarget().focus();
+    }
+
+    // Username-only auth flow: maps the chosen handle to a synthetic @pinball.local address
+    // so we don't have to collect personal email addresses from players.
+    async function loginOrRegister() {
+        const pseudo = document.getElementById('input-pseudo').value.trim();
+        const password = document.getElementById('input-password').value;
+        const errorMsg = document.getElementById('login-error');
+
+        const validPseudoRegex = /^[a-zA-Z0-9_\-]{3,20}$/;
+        if (!validPseudoRegex.test(pseudo)) {
+            errorMsg.innerText = currentLang === 'en' ? "Username: 3-20 chars (letters, numbers, - or _)." : "Pseudo : 3 à 20 caractères (lettres sans accent, chiffres, - ou _).";
+            errorMsg.style.display = 'block';
+            return;
+        }
+        if (password.length < 8) {
+            errorMsg.innerText = currentLang === 'en' ? "Password must be at least 8 characters." : "Le mot de passe doit contenir au moins 8 caractères.";
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        const fakeEmail = `${pseudo.toLowerCase()}@pinball.local`;
+        errorMsg.style.display = 'none';
+
+        const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email: fakeEmail, password });
+
+        if (signInError) {
+            const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ 
+                email: fakeEmail, 
+                password: password,
+                options: { data: { username: pseudo } }
+            });
+            if (signUpError || !signUpData.user || (Array.isArray(signUpData.user.identities) && signUpData.user.identities.length === 0)) {
+                errorMsg.innerText = currentLang === 'en' ? "Username already taken or incorrect password." : "Ce pseudo est déjà pris ou le mot de passe est incorrect.";
+                errorMsg.style.display = 'block';
+                return;
+            }
+            currentUserId = signUpData.user.id;
+        } else {
+            currentUserId = signInData.user.id;
+        }
+
+        await initProfile();
+        document.getElementById('login-modal').style.display = 'none';
+        if(getGameTarget().focus) getGameTarget().focus();
+        loadNotifications();
+    }
+
+    async function initProfile() {
+        if (currentUserId === "guest") return;
+        const { data } = await supabaseClient.from('profiles').select('*').eq('user_id', currentUserId).maybeSingle();
+        if (data) {
+            currentPlayer = data.username;
+            myAvatar = data.avatar_url || "";
+        }
+    }
+
+    function isValidHttpsUrl(string) {
+        try {
+            const url = new URL(string);
+            return url.protocol === 'https:';
+        } catch (_) {
+            return false;
+        }
+    }
+
+    async function changeAvatar() {
+        if (currentUserId === "guest") return alert(currentLang === 'en' ? "Guest mode does not allow changing avatars." : "Le mode invité ne permet pas de changer d'avatar.");
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/png, image/jpeg, image/jpg';
+        
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert(currentLang === 'en' ? "Image too large (max 2MB)." : "Image trop volumineuse (max 2 Mo).");
+                return;
+            }
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${currentUserId}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const content = document.getElementById('panel-content');
+            if(content) content.innerHTML = `<p style="text-align: center; color: var(--text-muted);">${dict[currentLang].uploading}</p>`;
+
+            const { error: uploadError } = await supabaseClient.storage
+                .from('avatars')
+                .upload(filePath, file, { upsert: true });
+
+            if (uploadError) {
+                alert("Erreur lors de l'upload : " + uploadError.message);
+                renderProfile();
+                return;
+            }
+
+            const { data: publicURLData } = supabaseClient.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+
+            myAvatar = publicURLData.publicUrl;
+
+            await supabaseClient.from('profiles').update({ avatar_url: myAvatar }).eq('user_id', currentUserId);
+            renderProfile();
+        };
+
+        fileInput.click();
+    }
+
+    async function deleteMyAccount() {
+        if (currentUserId === "guest") return;
+        const confirmDelete = confirm(currentLang === 'en' ? "Warning: Do you really want to delete your account, friends and scores? This is irreversible." : "Attention : voulez-vous vraiment supprimer votre compte, vos amis et tous vos scores ? Cette action est irréversible.");
+        if (!confirmDelete) return;
+
+        const { error: rpcError } = await supabaseClient.rpc('delete_account');
+        if (rpcError) {
+            await supabaseClient.from('friends').delete().or(`user_id.eq.${currentUserId},friend_id.eq.${currentUserId}`);
+            await supabaseClient.from('scores').delete().eq('player_name', currentPlayer);
+            await supabaseClient.from('profiles').delete().eq('user_id', currentUserId);
+        }
+        await supabaseClient.auth.signOut();
+        location.reload();
+    }
+
+    function renderProfile() {
+        const content = document.getElementById('panel-content');
+        const d = dict[currentLang];
+        const safeAvatar = isValidHttpsUrl(myAvatar) ? escapeHtml(myAvatar) : "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+        content.innerHTML = `
+            <div style="text-align: center; margin-top: 10px;">
+                <img src="${safeAvatar}" class="avatar-large" alt="Avatar" referrerpolicy="no-referrer">
+                <h2 style="margin: 0; color: var(--text-main);">${escapeHtml(currentPlayer)}</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Space Cadet Pilot</p>
+                <button class="tab-btn" onclick="changeAvatar()" style="width: 100%; margin-bottom: 10px;">${d.avatarBtn}</button>
+                <button class="tab-btn" onclick="logout()" style="width: 100%; margin-bottom: 10px; border-color: #ef4444; color: #ef4444;">${d.logoutBtn}</button>
+                ${currentUserId !== "guest" ? `<button class="tab-btn" onclick="deleteMyAccount()" style="width: 100%; font-size: 0.75rem; opacity: 0.8; border-color: #ef4444; color: #ef4444;">${d.deleteAccBtn}</button>` : ''}
+            </div>
+        `;
+    }
+
+    async function logout() {
+        if (currentUserId !== "guest") {
+            await supabaseClient.auth.signOut();
+        }
+        location.reload();
+    }
+
+    let hamburgerOpen = false;
+
+    function toggleHamburger() {
+        const menu = document.getElementById('hamburger-menu');
+        const btn = document.getElementById('hamburger-btn');
+        hamburgerOpen = !hamburgerOpen;
+        menu.style.display = hamburgerOpen ? 'flex' : 'none';
+        if (btn) btn.setAttribute('aria-expanded', String(hamburgerOpen));
+    }
+
+    function closePanel(type) {
+        if (type === 'hamburger' && hamburgerOpen) { toggleHamburger(); if(getGameTarget().focus) getGameTarget().focus(); }
+        if (type === 'side') {
+            const panel = document.getElementById('side-panel');
+            if (panel.style.display === 'block') {
+                panel.style.display = 'none';
+                panel.classList.remove('wide-panel');
+                if(getGameTarget().focus) getGameTarget().focus();
+            }
+        }
+    }
+
+    // Dismiss open menus when clicking outside onto the playfield
+    document.addEventListener('pointerdown', (e) => {
+        const panel = document.getElementById('side-panel');
+        const isClickInsidePanel = e.target.closest('#side-panel');
+        const isClickMenuBtn = e.target.closest('.menu-item');
+        const isClickHamburger = e.target.closest('#hamburger-btn');
+        const isClickLang = e.target.closest('#hamburger-menu');
+        
+        if (hamburgerOpen && !isClickLang && !isClickHamburger) toggleHamburger();
+        
+        if (panel.style.display === 'block' && !isClickInsidePanel && !isClickMenuBtn) {
+            panel.style.display = 'none';
+            panel.classList.remove('wide-panel');
+            if(getGameTarget().focus) getGameTarget().focus();
+        }
+    });
+
+    async function loadNotifications() {
+        if (currentUserId === "guest") return;
+        const badge = document.getElementById('menu-notif-badge');
+        const { data: requests } = await supabaseClient.from('friends').select('id, user_id, status').eq('friend_id', currentUserId).eq('status', 'pending');
+        
+        if (!requests || requests.length === 0) {
+            badge.style.display = 'none';
+            return;
+        }
+        badge.style.display = 'flex'; 
+        badge.innerText = requests.length;
+    }
+
+    async function renderNotificationsList() {
+        if (currentUserId === "guest") {
+            document.getElementById('panel-content').innerHTML = '<p style="text-align:center;">' + (currentLang === 'en' ? 'Unavailable in guest mode.' : 'Indisponible en mode invité.') + '</p>';
+            return;
+        }
+        const content = document.getElementById('panel-content');
+        content.innerHTML = `<p style="text-align:center; color:var(--text-muted);">${dict[currentLang].loading}</p>`;
+        
+        const { data: requests } = await supabaseClient.from('friends').select('id, user_id, status').eq('friend_id', currentUserId).eq('status', 'pending');
+        
+        if (!requests || requests.length === 0) {
+            content.innerHTML = '<p style="text-align:center; color:var(--text-muted);">' + dict[currentLang].noNotifs + '</p>';
+            return;
+        }
+
+        const senderIds = requests.map(r => r.user_id);
+        const { data: profiles } = await supabaseClient.from('profiles').select('user_id, username, avatar_url').in('user_id', senderIds);
+        let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
+        requests.forEach(req => {
+            const p = profiles.find(pr => pr.user_id === req.user_id);
+            if (p) {
+                const safeAvatar = isValidHttpsUrl(p.avatar_url) ? escapeHtml(p.avatar_url) : '';
+                html += `
+                <li class="list-item" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="${safeAvatar}" class="avatar-small" alt="" referrerpolicy="no-referrer">
+                        <strong>${escapeHtml(p.username)}</strong>
+                    </div>
+                    <div>
+                        <button class="action-btn btn-accept" onclick="respondFriend('${escapeHtml(req.id)}', 'accepted')" aria-label="Accept">OK</button>
+                        <button class="action-btn btn-decline" onclick="respondFriend('${escapeHtml(req.id)}', 'declined')" aria-label="Decline">X</button>
+                    </div>
+                </li>`;
+            }
+        });
+        html += '</ul>';
+        content.innerHTML = html;
+    }
+
+    async function respondFriend(requestId, action) {
+        if (action === 'accepted') await supabaseClient.from('friends').update({ status: 'accepted' }).eq('id', requestId);
+        else await supabaseClient.from('friends').delete().eq('id', requestId);
+        loadNotifications();
+        renderNotificationsList();
+    }
+
+    document.addEventListener('click', (e) => {
+        const searchItem = e.target.closest('.search-item');
+        if (searchItem) {
+            sendFriendRequest(searchItem.dataset.uid, searchItem.dataset.name);
+        }
+    });
+
+    let searchTimeout = null;
+    async function searchFriends() {
+        if (currentUserId === "guest") return;
+        clearTimeout(searchTimeout);
+        const rawQuery = document.getElementById('input-friend').value.trim();
+        const resultsDiv = document.getElementById('search-results');
+        
+        if (rawQuery.length < 2) { resultsDiv.style.display = 'none'; return; }
+
+        const safeQuery = rawQuery.replace(/[%_\\]/g, '\\$&');
+
+        searchTimeout = setTimeout(async () => {
+            const { data } = await supabaseClient.from('profiles').select('user_id, username, avatar_url').ilike('username', `%${safeQuery}%`).neq('user_id', currentUserId).limit(5);
+            if (data && data.length > 0) {
+                resultsDiv.innerHTML = data.map(u => {
+                    const safeAvatar = isValidHttpsUrl(u.avatar_url) ? escapeHtml(u.avatar_url) : '';
+                    return `
+                    <div class="search-item" data-uid="${escapeHtml(u.user_id)}" data-name="${escapeHtml(u.username)}">
+                        <img src="${safeAvatar}" class="avatar-small" alt="" referrerpolicy="no-referrer">
+                        <span>${escapeHtml(u.username)}</span>
+                    </div>
+                `}).join('');
+                resultsDiv.style.display = 'block';
+            } else { resultsDiv.style.display = 'none'; }
+        }, 250);
+    }
+
+    async function sendFriendRequest(targetId, targetName) {
+        document.getElementById('search-results').style.display = 'none';
+        document.getElementById('input-friend').value = '';
+        const { error } = await supabaseClient.from('friends').insert([{ friend_id: targetId, status: 'pending' }]);
+        const errDiv = document.getElementById('friend-error');
+        if (error) {
+            errDiv.innerText = error.code === '23505' ? (currentLang === 'en' ? "Request already sent." : "Demande déjà envoyée.") : "Erreur.";
+            errDiv.style.color = '#ef4444'; errDiv.style.display = 'block';
+        } else {
+            errDiv.innerText = currentLang === 'en' ? `Request sent to ${targetName}!` : `Demande à ${targetName} envoyée !`;
+            errDiv.style.color = '#10b981'; errDiv.style.display = 'block';
+            setTimeout(() => errDiv.style.display = 'none', 3000);
+        }
+    }
+
+    async function removeFriend(id) {
+        await supabaseClient.from('friends').delete().or(`user_id.eq.${currentUserId},friend_id.eq.${currentUserId}`).eq('id', id);
+        renderFriends();
+    }
+
+    // Fetch and deduplicate leaderboard entries (retaining only the personal best per player for Global/Friends tabs)
+    async function loadScores(tab) {
+        const list = document.getElementById('scores-list');
+        if (!list) return;
+        list.innerHTML = `<p style="text-align: center; color: var(--text-muted);">${dict[currentLang].loading}</p>`;
+        document.querySelectorAll('#scores-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.getElementById('btn-tab-' + tab);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        let query = supabaseClient.from('scores').select('player_name, score').order('score', { ascending: false });
+
+        if (tab === 'mondial') {
+            query = query.limit(500); 
+        } 
+        else if (tab === 'amis') {
+            if (currentUserId === "guest") {
+                list.innerHTML = '<p style="text-align: center;">' + (currentLang === 'en' ? 'Unavailable in guest mode.' : 'Indisponible en mode invité.') + '</p>';
+                return;
+            }
+            const { data: myFriends } = await supabaseClient.from('friends').select('user_id, friend_id').eq('status', 'accepted').or(`user_id.eq.${currentUserId},friend_id.eq.${currentUserId}`);
+            let friendIds = [currentUserId];
+            if (myFriends) myFriends.forEach(f => { friendIds.push(f.user_id === currentUserId ? f.friend_id : f.user_id); });
+            const { data: profiles } = await supabaseClient.from('profiles').select('username').in('user_id', friendIds);
+            const friendNames = profiles ? profiles.map(p => p.username) : [currentPlayer];
+            query = query.in('player_name', friendNames);
+        } 
+        else if (tab === 'perso') {
+            if (currentUserId === "guest") {
+                list.innerHTML = '<p style="text-align: center;">' + (currentLang === 'en' ? 'Guest scores are not saved.' : 'Les scores invités ne sont pas sauvegardés.') + '</p>';
+                return;
+            }
+            query = query.eq('player_name', currentPlayer).limit(50);
+        }
+
+        const { data, error } = await query;
+        if (error) { 
+            list.innerHTML = `<p style="color: #ef4444;">Error</p>`; 
+        } else if (!data || data.length === 0) { 
+            list.innerHTML = '<p style="text-align: center;">' + dict[currentLang].noScores + '</p>'; 
+        } else {
+            let finalData = data;
+
+            if (tab === 'mondial' || tab === 'amis') {
+                const seenPlayers = new Set();
+                finalData = data.filter(row => {
+                    const normalized = (row.player_name || '').trim().toLowerCase();
+                    if (seenPlayers.has(normalized)) return false; 
+                    seenPlayers.add(normalized);
+                    return true;
+                }).slice(0, 50);
+            }
+
+            const rows = finalData.map((row, i) => {
+                const safeName = escapeHtml(row.player_name);
+                const encodedName = encodeURIComponent(row.player_name || '');
+                return `
+                <li class="list-item" onpointerdown="event.stopPropagation(); openPlayerStats(decodeURIComponent('${encodedName}'))" title="${currentLang === 'en' ? 'View player stats' : 'Voir les statistiques de ce joueur'}" style="justify-content: space-between; cursor: pointer; ${row.player_name === currentPlayer && tab !== 'perso' ? 'font-weight: bold; text-decoration: underline;' : ''}">
+                    <strong class="clickable-player">${i + 1}. ${safeName}</strong>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-family: monospace; font-size: 1.1em;">${Number(row.score).toLocaleString('fr-FR')}</span>
+                        <span style="font-size: 0.8rem; opacity: 0.65;">📊</span>
+                    </div>
+                </li>`;
+            }).join('');
+
+            list.innerHTML = `
+                <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0 0 8px 0; text-align: center;">${dict[currentLang].statClickHint}</p>
+                <ul style="list-style: none; padding: 0; margin: 0;">${rows}</ul>
+            `;
+        }
+    }
+
+    let stopRemap = null;
+    let inspectedPlayer = "";
+
+    function openPlayerStats(playerName) {
+        if (!playerName) return;
+        inspectedPlayer = String(playerName).trim();
+        currentStatTab = 'overview';
+
+        const panel = document.getElementById('side-panel');
+        panel.style.display = 'block';
+        panel.dataset.active = 'stats';
+        panel.classList.add('wide-panel');
+
+        renderStatsShell(inspectedPlayer);
+        loadStats(inspectedPlayer);
+    }
+
+    function toggleMenu(menuType, forceOpen = false) {
+        if (typeof stopRemap === 'function') stopRemap(); 
+        if (hamburgerOpen) toggleHamburger(); 
+
+        const panel = document.getElementById('side-panel');
+        const title = document.getElementById('panel-title');
+        const content = document.getElementById('panel-content');
+        const d = dict[currentLang];
+
+        if (!forceOpen && panel.style.display === 'block' && panel.dataset.active === menuType) {
+            panel.style.display = 'none';
+            panel.classList.remove('wide-panel');
+            if(getGameTarget().focus) getGameTarget().focus();
+            return;
+        }
+        panel.style.display = 'block';
+        panel.dataset.active = menuType;
+        panel.classList.toggle('wide-panel', menuType === 'stats');
+
+        if (menuType === 'profile') { title.innerText = d.menuProfile; renderProfile(); } 
+        else if (menuType === 'notifs') { title.innerText = d.menuNotifs; renderNotificationsList(); }
+        else if (menuType === 'scores') {
+            title.innerText = d.menuScores;
+            content.innerHTML = `
+                <div id="scores-tabs" style="display: flex; gap: 5px; margin-bottom: 15px;">
+                    <button id="btn-tab-mondial" class="tab-btn active" onclick="loadScores('mondial')">${d.tabMondial}</button>
+                    <button id="btn-tab-amis" class="tab-btn" onclick="loadScores('amis')">${d.tabAmis}</button>
+                    <button id="btn-tab-perso" class="tab-btn" onclick="loadScores('perso')">${d.tabPerso}</button>
+                </div>
+                <div id="scores-list"></div>
+            `;
+            loadScores('mondial');
+        } 
+        else if (menuType === 'stats') {
+            const targetPlayer = (!forceOpen && currentPlayer && currentUserId !== "guest") ? currentPlayer : (inspectedPlayer || currentPlayer);
+            inspectedPlayer = targetPlayer;
+
+            if (!targetPlayer || (currentUserId === "guest" && !forceOpen)) {
+                title.innerText = d.menuStats;
+                content.innerHTML = '<p style="text-align:center;">' + (currentLang === 'en' ? 'Unavailable in guest mode (click a player in the leaderboard to inspect their stats).' : 'Indisponible en mode invité (cliquez sur un joueur du classement pour voir ses stats).') + '</p>';
+            } else {
+                renderStatsShell(targetPlayer);
+                loadStats(targetPlayer);
+            }
+        }
+        else if (menuType === 'friends') {
+            title.innerText = d.menuFriends;
+            if (currentUserId === "guest") {
+                content.innerHTML = '<p style="text-align:center;">' + (currentLang === 'en' ? 'Unavailable in guest mode.' : 'Indisponible en mode invité.') + '</p>';
+            } else {
+                content.innerHTML = `
+                    <div style="position: relative; margin-bottom: 15px;">
+                        <input type="text" id="input-friend" maxlength="20" placeholder="${d.searchPlaceholder}" onkeyup="searchFriends()" onkeydown="event.stopPropagation()">
+                        <div id="search-results" class="search-results"></div>
+                    </div>
+                    <p id="friend-error" style="font-size: 0.8rem; display: none;"></p>
+                    <div id="friends-list"><p style="text-align: center; color: var(--text-muted);">${d.loading}</p></div>
+                `;
+                renderFriends();
+            }
+        } 
+        else if (menuType === 'settings') { title.innerText = d.menuSettings; content.innerHTML = renderSettings(); } 
+        
+        else if (menuType === 'maps') {
+            title.innerText = currentLang === 'en' ? 'Table Selection' : 'Sélection de la table';
+            content.innerHTML = `
+                <div class="list-item" onclick="changeMap('cadet')" style="border-left: 3px solid ${currentMap === 'cadet' ? 'var(--theme-color)' : 'transparent'}; background: ${currentMap === 'cadet' ? 'rgba(255,255,255,0.05)' : 'transparent'};">
+                    <strong>Space Cadet</strong> ${currentMap === 'cadet' ? (currentLang === 'en' ? '(Native)' : '(Natif)') : ''}
+                </div>
+                <div class="list-item" onclick="changeMap('dragon')" style="border-left: 3px solid ${currentMap === 'dragon' ? 'var(--theme-color)' : 'transparent'}; background: ${currentMap === 'dragon' ? 'rgba(255,255,255,0.05)' : 'transparent'};">
+                    <strong>Dragon's Keep</strong> ${currentMap === 'dragon' ? '(DOS)' : ''}
+                </div>
+                <div class="list-item" onclick="changeMap('pirate')" style="border-left: 3px solid ${currentMap === 'pirate' ? 'var(--theme-color)' : 'transparent'}; background: ${currentMap === 'pirate' ? 'rgba(255,255,255,0.05)' : 'transparent'};">
+                    <strong>Skulduggery</strong> ${currentMap === 'pirate' ? '(DOS)' : ''}
+                </div>
+            `;
+        }
+        else if (menuType === 'legal') {
+            title.innerText = d.menuLegal;
+            content.innerHTML = d.legalPopup;
+        }
+    }
+
+    async function renderFriends() {
+        if (currentUserId === "guest") return;
+        const listDiv = document.getElementById('friends-list');
+        const { data: myFriends } = await supabaseClient.from('friends').select('id, user_id, friend_id').eq('status', 'accepted').or(`user_id.eq.${currentUserId},friend_id.eq.${currentUserId}`);
+        
+        if (!myFriends || myFriends.length === 0) { listDiv.innerHTML = '<p style="text-align: center; color: var(--text-muted);">' + dict[currentLang].noFriends + '</p>'; return; }
+
+        let friendIds = myFriends.map(f => f.user_id === currentUserId ? f.friend_id : f.user_id);
+        const { data: profiles } = await supabaseClient.from('profiles').select('user_id, username, avatar_url').in('user_id', friendIds);
+
+        let html = `<p style="font-size: 0.74rem; color: var(--text-muted); margin: 0 0 8px 0; text-align: center;">${dict[currentLang].statClickHint}</p><ul style="list-style: none; padding: 0; margin: 0;">`;
+        myFriends.forEach(rel => {
+            const targetId = rel.user_id === currentUserId ? rel.friend_id : rel.user_id;
+            const p = profiles.find(pr => pr.user_id === targetId);
+            if (p) {
+                const safeAvatar = isValidHttpsUrl(p.avatar_url) ? escapeHtml(p.avatar_url) : '';
+                const safeName = escapeHtml(p.username);
+                const encodedName = encodeURIComponent(p.username || '');
+                html += `
+                <li class="list-item" onpointerdown="event.stopPropagation(); openPlayerStats(decodeURIComponent('${encodedName}'))" style="justify-content: space-between; cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                        <img src="${safeAvatar}" class="avatar-small" alt="" referrerpolicy="no-referrer">
+                        <span class="clickable-player"><strong>${safeName}</strong></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="tab-btn" onpointerdown="event.stopPropagation(); openPlayerStats(decodeURIComponent('${encodedName}'))" style="padding: 3px 7px; font-size: 0.75rem;" title="Stats">📊</button>
+                        <button type="button" onpointerdown="event.stopPropagation();" onclick="event.stopPropagation(); removeFriend('${escapeHtml(rel.id)}')" title="Remove" aria-label="Remove friend" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1.2rem; padding: 4px 8px;">&times;</button>
+                    </div>
+                </li>`;
+            }
+        });
+        html += '</ul>'; listDiv.innerHTML = html;
+    }
+
+    // Key remapping layer: SpaceCadetPinball & DOSBox expect US QWERTY keycodes (Z, /, Space, X, .).
+    // We intercept custom user bindings in the capture phase and dispatch synthetic events with native codes.
+    const defaultCodes = {
+        left: { key: 'z', code: 'KeyZ', keyCode: 90 }, right: { key: '/', code: 'Slash', keyCode: 191 },
+        plunger: { key: ' ', code: 'Space', keyCode: 32 }, tiltLeft: { key: 'x', code: 'KeyX', keyCode: 88 },
+        tiltRight: { key: '.', code: 'Period', keyCode: 190 }, tiltCenter: { key: 'arrowup', code: 'ArrowUp', keyCode: 38 },
+        fullscreen: { key: 'f4', code: 'F4', keyCode: 115 }
+    };
+    
+    const defaultKeyBindings = { left: 'arrowleft', right: 'arrowright', plunger: ' ', tiltLeft: 'x', tiltRight: ':', tiltCenter: 'arrowup', fullscreen: 'f4' };
+    let keyBindings = { ...defaultKeyBindings };
+    try {
+        const savedKeys = localStorage.getItem('pinball_keys');
+        if (savedKeys) {
+            const parsed = JSON.parse(savedKeys);
+            if (parsed && typeof parsed === 'object') {
+                keyBindings = { ...defaultKeyBindings, ...parsed };
+            }
+        }
+    } catch (e) {
+        keyBindings = { ...defaultKeyBindings };
+    }
+    
+    let isRemapping = false;
+    let crtEnabled = false; 
+
+    const formatKey = (key) => {
+        if (!key || typeof key !== 'string') return '?';
+        if (key === ' ') return currentLang === 'en' ? 'SPACE' : 'ESPACE';
+        if (key === 'arrowleft') return '←'; if (key === 'arrowright') return '→';
+        if (key === 'arrowup') return '↑'; if (key === 'arrowdown') return '↓';
+        return key.toUpperCase();
+    };
+
+    function toggleCRT() {
+        crtEnabled = !crtEnabled;
+        document.getElementById('crt-overlay').style.display = crtEnabled ? 'block' : 'none';
+        localStorage.setItem('pinball_crt', crtEnabled);
+        document.getElementById('panel-content').innerHTML = renderSettings();
+    }
+
+    function renderSettings() {
+        const d = dict[currentLang];
+        const currentTheme = document.body.getAttribute('data-theme') || 'default';
+        return `
+            <div style="background: rgba(0,0,0,0.18); padding: 12px; border-radius: 4px; margin-bottom: 12px; font-size: 0.9rem;">
+                <ul style="list-style: none; padding: 0; margin: 0; line-height: 2.5;">
+                    <li style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 10px; margin-bottom: 10px;">
+                        <span>${d.visualTheme}</span> 
+                        <select onchange="setTheme(this.value)" aria-label="Theme" style="background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-ui); border-radius: 4px; padding: 4px 6px; outline: none; cursor: pointer; font-size: 0.85rem;">
+                            <option value="default" ${currentTheme === 'default' ? 'selected' : ''}>${d.themeDark}</option>
+                            <option value="retro" ${currentTheme === 'retro' ? 'selected' : ''}>${d.themeWin95}</option>
+                            <option value="xp" ${currentTheme === 'xp' ? 'selected' : ''}>${d.themeWinXP}</option>
+                        </select>
+                    </li>
+                    <li style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 10px; margin-bottom: 10px;">
+                        <span>${d.crtFilter}</span> <button onclick="toggleCRT()" class="tab-btn" style="min-width: 80px;">${crtEnabled ? 'ON' : 'OFF'}</button>
+                    </li>
+                    <li style="display: flex; justify-content: space-between; align-items: center;"><span>${d.flipsL}</span> <button onclick="startRemap('left')" class="tab-btn" id="btn-map-left" style="min-width: 80px;">${escapeHtml(formatKey(keyBindings.left))}</button></li>
+                    <li style="display: flex; justify-content: space-between; align-items: center;"><span>${d.flipsR}</span> <button onclick="startRemap('right')" class="tab-btn" id="btn-map-right" style="min-width: 80px;">${escapeHtml(formatKey(keyBindings.right))}</button></li>
+                    <li style="display: flex; justify-content: space-between; align-items: center;"><span>${d.plungerKey}</span> <button onclick="startRemap('plunger')" class="tab-btn" id="btn-map-plunger" style="min-width: 80px;">${escapeHtml(formatKey(keyBindings.plunger))}</button></li>
+                    <li style="display: flex; justify-content: space-between; align-items: center;"><span>${d.tiltL}</span> <button onclick="startRemap('tiltLeft')" class="tab-btn" id="btn-map-tiltLeft" style="min-width: 80px;">${escapeHtml(formatKey(keyBindings.tiltLeft))}</button></li>
+                    <li style="display: flex; justify-content: space-between; align-items: center;"><span>${d.tiltR}</span> <button onclick="startRemap('tiltRight')" class="tab-btn" id="btn-map-tiltRight" style="min-width: 80px;">${escapeHtml(formatKey(keyBindings.tiltRight))}</button></li>
+                    <li style="display: flex; justify-content: space-between; align-items: center;"><span>${d.tiltC}</span> <button onclick="startRemap('tiltCenter')" class="tab-btn" id="btn-map-tiltCenter" style="min-width: 80px;">${escapeHtml(formatKey(keyBindings.tiltCenter))}</button></li>
+                </ul>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin: 0;">${d.remapHint}</p>
+        `;
+    }
+
+    function startRemap(action) {
+        if (stopRemap) { stopRemap(); document.getElementById('panel-content').innerHTML = renderSettings(); }
+        isRemapping = true;
+        const btn = document.getElementById(`btn-map-${action}`);
+        btn.innerText = '...'; btn.classList.add('active');
+        
+        const onKey = (e) => {
+            e.preventDefault();
+            if (e.key !== 'Escape') {
+                keyBindings[action] = e.key.toLowerCase();
+                try { localStorage.setItem('pinball_keys', JSON.stringify(keyBindings)); } catch (_) {}
+            }
+            stopRemap();
+            document.getElementById('panel-content').innerHTML = renderSettings();
+        };
+        stopRemap = () => { isRemapping = false; document.removeEventListener('keydown', onKey); stopRemap = null; };
+        document.addEventListener('keydown', onKey);
+    }
+
+    function translateKey(e) {
+        if (isRemapping || !e.isTrusted) return; 
+        const k = e.key.toLowerCase();
+        let action = null;
+        for (const [key, value] of Object.entries(keyBindings)) { if (k === value) action = key; }
+
+        if (action && k !== defaultCodes[action].key) {
+            e.stopPropagation(); e.preventDefault();
+            const d = defaultCodes[action];
+            getGameTarget().dispatchEvent(new KeyboardEvent(e.type, { key: d.key, code: d.code, keyCode: d.keyCode, bubbles: true, cancelable: true }));
+        }
+    }
+    window.addEventListener('keydown', translateKey, true);
+    window.addEventListener('keyup', translateKey, true);
+
+    const lexiqueMissions = {
+        "Awaiting Deployment...": "En attente de déploiement...",
+        "Awaiting Deployment": "En attente de déploiement",
+        "Select Mission": "Sélectionnez une mission",
+        "Target Practice": "Entraînement au tir",
+        "Science": "Mission Scientifique",
+        "Bug Hunt": "Chasse aux bugs",
+        "Rescue": "Mission de Sauvetage",
+        "Alien Menace": "Menace Extraterrestre",
+        "Secret Mission": "Mission Secrète",
+        "Maelstrom": "Maelström"
+    };
+
+    // Bridge callbacks exposed on `window` and invoked directly from the compiled C++ WASM binary
+    // via EM_ASM hooks whenever score, ball count, mission text, or game-over state changes.
+    let scoreActuel = 0;
+    let scoreDerniereBille = 0;
+    let pointsParBille = [];
+    let derniereBilleVue = 1;
+
+    function resetCurrentGameStats() {
+        scoreActuel = 0;
+        scoreDerniereBille = 0;
+        pointsParBille = [];
+        derniereBilleVue = 1;
+        activeTimeTracker.reset();
+    }
+
+    window.updatePinballScore = function(score) {
+        if (score === 0 && scoreActuel > 0) {
+            resetCurrentGameStats();
+        }
+        if (score > 0) {
+            activeTimeTracker.startOnFirstScore();
+        }
+        
+        scoreActuel = score;
+        const formattedScore = new Intl.NumberFormat('fr-FR').format(score);
+        const scoreUI = document.getElementById('ui-score');
+        if (scoreUI) scoreUI.innerText = formattedScore;
+    };
+
+    window.updatePinballBall = function(billesRestantes) {
+        let numeroBilleEnCours = 4 - billesRestantes;
+        // Record per-ball score delta only when transitioning to the next ball
+        if (numeroBilleEnCours > derniereBilleVue && numeroBilleEnCours <= 3) {
+            let scoreDeCetteBille = Math.max(0, scoreActuel - scoreDerniereBille);
+            pointsParBille.push(scoreDeCetteBille);
+            scoreDerniereBille = scoreActuel;
+            derniereBilleVue = numeroBilleEnCours;
+        } else if (numeroBilleEnCours === 1 && derniereBilleVue > 1) {
+            resetCurrentGameStats();
+        }
+
+        const ballUI = document.getElementById('ui-ball');
+        if (ballUI) {
+            let prefixe = (typeof currentLang !== 'undefined' && currentLang === 'en') ? "BALL" : "BILLE";
+            ballUI.innerText = `${prefixe} ${Math.min(Math.max(numeroBilleEnCours, 1), 3)}`;
+        }
+    };
+
+    window.updatePinballMission = function(missionText) {
+        const missionUI = document.getElementById('ui-mission');
+        if (missionUI) {
+            let texteOriginal = missionText ? missionText.trim() : "Awaiting Deployment";
+            let texteTraduit = lexiqueMissions[texteOriginal] || texteOriginal;
+            if (currentLang === 'en' && missionText) {
+                texteTraduit = missionText;
+            }
+            missionUI.innerText = texteTraduit;
+        }
+    };
+
+    let lastSubmittedScore = null;
+    let lastSubmitTime = 0;
+
+    window.onPinballGameOver = async function (score) {
+        if (!currentUserId || currentUserId === "guest" || !Number.isInteger(score) || score <= 0 || score > 1000000000) {
+            resetCurrentGameStats();
+            return;
+        }
+        
+        activeTimeTracker.pauseClock();
+        let tempsDeJeuSecondes = activeTimeTracker.getActiveSeconds();
+
+        let scoreDeCetteBille = Math.max(0, score - scoreDerniereBille);
+        pointsParBille.push(scoreDeCetteBille);
+
+        // Debounce duplicate Game Over triggers from the engine within a 5s window
+        const now = Date.now();
+        if (score === lastSubmittedScore && (now - lastSubmitTime) < 5000) {
+            resetCurrentGameStats();
+            return;
+        }
+        lastSubmittedScore = score;
+        lastSubmitTime = now;
+
+        try {
+            await supabaseClient.rpc('submit_score', { 
+                p_score: score,
+                p_stats_billes: pointsParBille,
+                p_temps_jeu: tempsDeJeuSecondes
+            });
+        } catch (e) {
+            console.error("Failed to submit score via RPC:", e);
+        }
+
+        resetCurrentGameStats();
+
+        const panel = document.getElementById('side-panel');
+        const activeScoreTab = document.querySelector('#scores-tabs .tab-btn.active');
+        if (panel && panel.style.display === 'block') {
+            if (panel.dataset.active === 'scores' && activeScoreTab) {
+                loadScores(activeScoreTab.id.replace('btn-tab-', ''));
+            } else if (panel.dataset.active === 'stats') {
+                loadStats(inspectedPlayer || currentPlayer);
+            }
+        }
+    };
+
+    // Player telemetry & Chart.js rendering (supports inspecting any player from leaderboards/friends)
+    let myChart = null;
+    let cachedPlayerStats = null;
+    let currentStatTab = 'overview';
+
+    function formatTimeSec(sec) {
+        if (!sec || sec <= 0) return "0m 00s";
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = Math.round(sec % 60).toString().padStart(2, '0');
+        if (h > 0) return `${h}h ${m.toString().padStart(2, '0')}m`;
+        return `${m}m ${s}s`;
+    }
+
+    function renderStatsShell(playerName) {
+        const d = dict[currentLang];
+        const title = document.getElementById('panel-title');
+        const content = document.getElementById('panel-content');
+        const isViewingOther = currentPlayer && currentUserId !== 'guest' && playerName.toLowerCase() !== currentPlayer.toLowerCase();
+        const encodedMe = encodeURIComponent(currentPlayer || '');
+
+        title.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                <span>${escapeHtml(d.menuStats)} : ${escapeHtml(playerName)}</span>
+                ${isViewingOther ? `<button type="button" class="tab-btn" onpointerdown="event.stopPropagation(); openPlayerStats(decodeURIComponent('${encodedMe}'))" style="padding: 2px 8px; font-size: 0.72rem;">${d.statBackToMe}</button>` : ''}
+            </div>
+        `;
+
+        content.innerHTML = `
+            <div id="stats-subtabs" style="display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap;">
+                <button type="button" id="stat-btn-overview" class="tab-btn active" style="flex: 1; padding: 5px 6px; font-size: 0.78rem;" onpointerdown="event.stopPropagation(); switchStatTab('overview')">${d.statTabOverview}</button>
+                <button type="button" id="stat-btn-scores" class="tab-btn" style="flex: 1; padding: 5px 6px; font-size: 0.78rem;" onpointerdown="event.stopPropagation(); switchStatTab('scores')">${d.statTabScores}</button>
+                <button type="button" id="stat-btn-time" class="tab-btn" style="flex: 1; padding: 5px 6px; font-size: 0.78rem;" onpointerdown="event.stopPropagation(); switchStatTab('time')">${d.statTabTime}</button>
+                <button type="button" id="stat-btn-balls" class="tab-btn" style="flex: 1; padding: 5px 6px; font-size: 0.78rem;" onpointerdown="event.stopPropagation(); switchStatTab('balls')">${d.statTabBalls}</button>
+            </div>
+            <div id="stats-chart-wrapper" style="display: none; background: rgba(0,0,0,0.22); padding: 10px; border-radius: 6px; margin-bottom: 12px;">
+                <canvas id="scoreChart" width="100" height="68"></canvas>
+            </div>
+            <div id="stats-details" style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+                <p>${d.loading}</p>
+            </div>
+        `;
+    }
+
+    async function loadStats(playerName = currentPlayer) {
+        const detailsDiv = document.getElementById('stats-details');
+        if (!detailsDiv || !playerName) return;
+
+        const cleanName = playerName.trim();
+
+        // Case-insensitive lookup in case profiles.username casing differs from historical scores.player_name
+        let { data, error } = await supabaseClient
+            .from('scores')
+            .select('score, stats_billes, temps_jeu, created_at')
+            .ilike('player_name', cleanName)
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            const fallback = await supabaseClient
+                .from('scores')
+                .select('score, created_at')
+                .ilike('player_name', cleanName)
+                .order('created_at', { ascending: true });
+            data = fallback.data;
+            error = fallback.error;
+        }
+
+        if (error || !data || data.length === 0) {
+            detailsDiv.innerHTML = `<p>${currentLang === 'en' ? 'No games recorded yet for ' : 'Aucune partie enregistrée pour '} <strong>${escapeHtml(cleanName)}</strong>.</p>`;
+            return;
+        }
+
+        const totalGames = data.length;
+        const allScores = data.map(g => Number(g.score) || 0);
+        const bestScore = Math.max(...allScores);
+        const sumScores = allScores.reduce((a, b) => a + b, 0);
+        const avgScore = Math.round(sumScores / totalGames);
+
+        // Filter out legacy AFK sessions (> 45 min) and compute median duration so old unpaused games don't skew metrics
+        const rawTimes = data.map(g => Number(g.temps_jeu) || 0).filter(t => t > 3);
+        const cleanTimes = rawTimes.filter(t => t <= 2700);
+        const timePool = cleanTimes.length > 0 ? cleanTimes : rawTimes;
+
+        const totalTimeSec = rawTimes.reduce((a, b) => a + b, 0);
+        const avgTimeSec = timePool.length > 0 ? Math.round(timePool.reduce((a, b) => a + b, 0) / timePool.length) : 0;
+
+        let medianTimeSec = 0;
+        if (timePool.length > 0) {
+            const sortedT = [...timePool].sort((a, b) => a - b);
+            const mid = Math.floor(sortedT.length / 2);
+            medianTimeSec = sortedT.length % 2 !== 0 ? sortedT[mid] : Math.round((sortedT[mid - 1] + sortedT[mid]) / 2);
+        }
+
+        let allSingleBalls = [];
+        let ball1List = [], ball2List = [], ball3List = [];
+        let totalBallsCount = 0;
+
+        data.forEach(g => {
+            if (Array.isArray(g.stats_billes) && g.stats_billes.length > 0) {
+                const cleanBalls = g.stats_billes.map(v => Math.max(0, Number(v) || 0));
+                allSingleBalls.push(...cleanBalls);
+                totalBallsCount += cleanBalls.length;
+                if (cleanBalls[0] !== undefined) ball1List.push(cleanBalls[0]);
+                if (cleanBalls[1] !== undefined) ball2List.push(cleanBalls[1]);
+                if (cleanBalls[2] !== undefined) ball3List.push(cleanBalls[2]);
+            } else {
+                totalBallsCount += 3;
+            }
+        });
+
+        const avgPtsPerBall = totalBallsCount > 0 ? Math.round(sumScores / totalBallsCount) : Math.round(avgScore / 3);
+        const bestSingleBall = allSingleBalls.length > 0 ? Math.max(...allSingleBalls) : Math.round(bestScore / 3);
+
+        let timedScoreSum = 0;
+        let timedSecSum = 0;
+        data.forEach(g => {
+            const t = Number(g.temps_jeu) || 0;
+            if (t > 5 && t <= 2700) {
+                timedScoreSum += (Number(g.score) || 0);
+                timedSecSum += t;
+            }
+        });
+        const ppm = timedSecSum > 0 ? Math.round((timedScoreSum / timedSecSum) * 60) : 0;
+
+        const avgB1 = ball1List.length > 0 ? Math.round(ball1List.reduce((a, b) => a + b, 0) / ball1List.length) : 0;
+        const avgB2 = ball2List.length > 0 ? Math.round(ball2List.reduce((a, b) => a + b, 0) / ball2List.length) : 0;
+        const avgB3 = ball3List.length > 0 ? Math.round(ball3List.reduce((a, b) => a + b, 0) / ball3List.length) : 0;
+
+        cachedPlayerStats = {
+            playerName: cleanName,
+            totalGames,
+            bestScore,
+            avgScore,
+            medianTimeSec,
+            avgTimeSec,
+            totalTimeSec,
+            avgPtsPerBall,
+            bestSingleBall,
+            ppm,
+            avgB1,
+            avgB2,
+            avgB3,
+            recentGames: data.slice(-25)
+        };
+
+        switchStatTab(currentStatTab || 'overview');
+    }
+
+    function switchStatTab(tab) {
+        currentStatTab = tab;
+        document.querySelectorAll('#stats-subtabs .tab-btn').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.getElementById('stat-btn-' + tab);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const chartWrapper = document.getElementById('stats-chart-wrapper');
+        const detailsDiv = document.getElementById('stats-details');
+        if (!cachedPlayerStats || !detailsDiv) return;
+
+        const d = dict[currentLang];
+        const s = cachedPlayerStats;
+        const fmt = (n) => new Intl.NumberFormat('fr-FR').format(n);
+
+        if (myChart) {
+            myChart.destroy();
+            myChart = null;
+        }
+
+        if (tab === 'overview') {
+            chartWrapper.style.display = 'none';
+            detailsDiv.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-card-label">${d.statBest}</span>
+                        <span class="stat-card-value">${fmt(s.bestScore)}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-label">${d.statAvgScore}</span>
+                        <span class="stat-card-value">${fmt(s.avgScore)}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-label">${d.statMedianTime}</span>
+                        <span class="stat-card-value">${formatTimeSec(s.medianTimeSec)}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-label">${d.statAvgTime}</span>
+                        <span class="stat-card-value">${formatTimeSec(s.avgTimeSec)}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-label">${d.statAvgBall}</span>
+                        <span class="stat-card-value">${fmt(s.avgPtsPerBall)}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-label">${d.statBestBall}</span>
+                        <span class="stat-card-value">${fmt(s.bestSingleBall)}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-label">${d.statPPM}</span>
+                        <span class="stat-card-value">${fmt(s.ppm)}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-label">${d.statGamesCount}</span>
+                        <span class="stat-card-value">${s.totalGames} (${formatTimeSec(s.totalTimeSec)})</span>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        chartWrapper.style.display = 'block';
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        const labels = s.recentGames.map((_, i) => `#${i + 1}`);
+
+        if (tab === 'scores') {
+            const scoresData = s.recentGames.map(g => Number(g.score) || 0);
+            const avgLine = s.recentGames.map(() => s.avgScore);
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Score',
+                            data: scoresData,
+                            borderColor: '#a855f7',
+                            backgroundColor: 'rgba(168, 85, 247, 0.15)',
+                            borderWidth: 2,
+                            tension: 0.25,
+                            pointRadius: 2.5,
+                            fill: true
+                        },
+                        {
+                            label: d.statAvgScore,
+                            data: avgLine,
+                            borderColor: 'rgba(255, 255, 255, 0.35)',
+                            borderDash: [5, 5],
+                            borderWidth: 1.5,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    color: '#a1a1aa',
+                    scales: {
+                        y: { ticks: { color: '#a1a1aa' }, grid: { color: '#2e2e2e' } },
+                        x: { ticks: { color: '#a1a1aa', maxTicksLimit: 8 }, grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            detailsDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-around; margin-top: 8px; color: var(--text-main);">
+                    <div><strong>${d.statBest}</strong><br><span style="font-family: monospace; color: #a855f7;">${fmt(s.bestScore)}</span></div>
+                    <div><strong>${d.statAvgScore}</strong><br><span style="font-family: monospace; color: #a855f7;">${fmt(s.avgScore)}</span></div>
+                </div>
+            `;
+        } 
+        else if (tab === 'time') {
+            const timeGames = s.recentGames.filter(g => (Number(g.temps_jeu) || 0) > 0);
+            const timeLabels = timeGames.map((_, i) => `#${i + 1}`);
+            const timeData = timeGames.map(g => Number(g.temps_jeu) || 0);
+            const medianLine = timeGames.map(() => s.medianTimeSec);
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timeLabels,
+                    datasets: [
+                        {
+                            label: currentLang === 'en' ? 'Duration (s)' : 'Durée (s)',
+                            data: timeData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                            borderWidth: 2,
+                            tension: 0.25,
+                            pointRadius: 2.5,
+                            fill: true
+                        },
+                        {
+                            label: d.statMedianTime,
+                            data: medianLine,
+                            borderColor: 'rgba(255, 255, 255, 0.35)',
+                            borderDash: [5, 5],
+                            borderWidth: 1.5,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    color: '#a1a1aa',
+                    scales: {
+                        y: {
+                            ticks: {
+                                color: '#a1a1aa',
+                                callback: (val) => formatTimeSec(val)
+                            },
+                            grid: { color: '#2e2e2e' }
+                        },
+                        x: { ticks: { color: '#a1a1aa', maxTicksLimit: 8 }, grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => formatTimeSec(ctx.parsed.y)
+                            }
+                        }
+                    }
+                }
+            });
+
+            detailsDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-around; margin-top: 8px; color: var(--text-main);">
+                    <div><strong>${d.statMedianTime}</strong><br><span style="font-family: monospace; color: #10b981;">${formatTimeSec(s.medianTimeSec)}</span></div>
+                    <div><strong>${d.statAvgTime}</strong><br><span style="font-family: monospace; color: #10b981;">${formatTimeSec(s.avgTimeSec)}</span></div>
+                    <div><strong>${d.statPPM}</strong><br><span style="font-family: monospace; color: #10b981;">${fmt(s.ppm)}</span></div>
+                </div>
+            `;
+        }
+        else if (tab === 'balls') {
+            const gamesWithBalls = s.recentGames.filter(g => Array.isArray(g.stats_billes) && g.stats_billes.length > 0);
+            const ballLabels = gamesWithBalls.map((_, i) => `#${i + 1}`);
+            const b1Data = gamesWithBalls.map(g => Math.max(0, Number(g.stats_billes[0]) || 0));
+            const b2Data = gamesWithBalls.map(g => Math.max(0, Number(g.stats_billes[1]) || 0));
+            const b3Data = gamesWithBalls.map(g => Math.max(0, Number(g.stats_billes[2]) || 0));
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ballLabels,
+                    datasets: [
+                        { label: 'Bille 1', data: b1Data, backgroundColor: '#38bdf8' },
+                        { label: 'Bille 2', data: b2Data, backgroundColor: '#a855f7' },
+                        { label: 'Bille 3', data: b3Data, backgroundColor: '#f43f5e' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    color: '#a1a1aa',
+                    scales: {
+                        x: { stacked: true, ticks: { color: '#a1a1aa', maxTicksLimit: 8 }, grid: { display: false } },
+                        y: { stacked: true, ticks: { color: '#a1a1aa' }, grid: { color: '#2e2e2e' } }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: { color: '#a1a1aa', boxWidth: 10, font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            detailsDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-around; margin-top: 8px; color: var(--text-main);">
+                    <div><strong>Moy. Bille 1</strong><br><span style="font-family: monospace; color: #38bdf8;">${fmt(s.avgB1)}</span></div>
+                    <div><strong>Moy. Bille 2</strong><br><span style="font-family: monospace; color: #a855f7;">${fmt(s.avgB2)}</span></div>
+                    <div><strong>Moy. Bille 3</strong><br><span style="font-family: monospace; color: #f43f5e;">${fmt(s.avgB3)}</span></div>
+                </div>
+            `;
+        }
+    }
+
+    function loadExternalAsset(tag, attrs) {
+        return new Promise((resolve, reject) => {
+            const el = document.createElement(tag);
+            Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+            el.onload = resolve;
+            el.onerror = reject;
+            document.head.appendChild(el);
+        });
+    }
+
+    // Boot either the native Emscripten WASM port (Space Cadet) or the js-dos Win3.1 bundle (Dragon's Keep / Skulduggery)
+    if (currentMap === 'cadet') {
+        window.Module = { 
+            arguments: ['-table', 'SpaceCadet'], 
+            canvas: document.getElementById('canvas'),
+            locateFile: function(path) {
+                if (path.endsWith('.wasm')) return 'cadet.wasm';
+                if (path.endsWith('.data')) return 'cadet.data';
+                return path;
+            }
+        };
+        var script = document.createElement('script');
+        script.src = 'cadet.js'; 
+        document.body.appendChild(script);
+
+    } else {
+        document.body.classList.add('is-jsdos');
+        
+        const hud = document.getElementById('hud-container');
+        if (hud) hud.style.display = 'none';
+        const muteBtn = document.getElementById('mute-btn');
+        if (muteBtn) muteBtn.style.display = 'none';
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (window.innerWidth <= 768) return;
+
+            const oldCanvas = document.getElementById('canvas');
+            if (oldCanvas) oldCanvas.remove();
+
+            const loadingOverlay = document.getElementById('jsdos-loading');
+            const timerSpan = document.getElementById('loading-timer');
+            let countdown = null;
+
+            const hideLoadingOverlay = () => {
+                if (countdown) clearInterval(countdown);
+                if (loadingOverlay && loadingOverlay.parentNode) {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => { if (loadingOverlay.parentNode) loadingOverlay.remove(); }, 400);
+                }
+            };
+
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+                let secondsLeft = 10;
+                countdown = setInterval(() => {
+                    secondsLeft--;
+                    if (timerSpan && secondsLeft >= 0) timerSpan.innerText = secondsLeft;
+                    if (secondsLeft <= 0) {
+                        hideLoadingOverlay();
+                    }
+                }, 1000);
+            }
+
+            window.emulators = { pathPrefix: "https://v8.js-dos.com/latest/emulators/" };
+            await loadExternalAsset('link', { rel: 'stylesheet', href: 'https://v8.js-dos.com/latest/js-dos.css' });
+            await loadExternalAsset('script', { src: 'https://v8.js-dos.com/latest/js-dos.js' });
+
+            let baseFile = (currentMap === 'dragon') ? "./dragon.jsdos" : "./pirates.jsdos";
+            let bundleUrl = baseFile + "?v=1.0.0";
+            
+            const dosElement = document.getElementById("game-container");
+            dosElement.style.display = "block";
+
+            Dos(dosElement, {
+                url: bundleUrl,
+                pathPrefix: "https://v8.js-dos.com/latest/emulators/",
+                backend: "dosboxX",
+                autoStart: true,
+                mouseCapture: false,
+                onEvent: (event, ci) => {
+                    if (event === "ci-ready") {
+                        const c = document.querySelector('#game-container canvas');
+                        if (c && c.focus) c.focus();
+
+                        // Move the emulated Win3.1 cursor to the bottom-right corner once the table boots
+                        setTimeout(() => {
+                            if (ci && typeof ci.sendMouseMotion === "function") {
+                                ci.sendMouseMotion(640, 480);
+                            }
+                        }, 3500);
+                    }
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>
